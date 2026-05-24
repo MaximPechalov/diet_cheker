@@ -1,0 +1,487 @@
+{
+    "meta":{
+        "version": "1.0",
+        "last_updated": "2026-05-24",
+        "description": "Полная база продуктов для приложения анализа чеков по 4 диетам: без сахара, кето, low-FOODMAP, без лактозы. Ключи - нормализованные названия (нижний регистр, без брендов).",
+        "ocr_normalization_rules": [
+            "1. Удалить слова ЦЕЛИКОМ заглавными буквами (бренды: ПРОСТОКВАШИНО, МИРАТОРГ, ЧУДО)",
+            "2. Удалить вес/объем в конце: 180г, 200мл, 1л, 1кг",
+            "3. Удалить ТМ, ТЗ, АО, ООО, кавычки, звездочки",
+            "4. Привести к нижнему регистру",
+            "5. Удалить всё после запятой в названии (лишние описания)"
+        ],
+        "matching_algoritm": "Ищем в base_tokens каждый продукт. Если найдено - применяем diet_rules. Если не найдено - 'unknown', предлагаем пользователю категоризировать"
+    },
+    "diets": {
+        "no_sugar": {
+            "name": "Без добавленного сахара",
+            "description": "Исключает добавленный сахар, сиропы, патоку, мед, декстрозу, мальтодекстрин. Натуральные сахара (фрукты, лактоза) разрешены",
+            "forbidden_tokens_in_ingredients": [
+                "сахар", "сахароза", "сироп глюкозный", "сироп фруктозный", "патока", "мед", "агава", "декстроза", "мальтодекстрин", "фруктоза кристалическая", "концентрат сока", "нектар", "карамельный сироп", "сахар тростниковый", "сахар коричневый", "пудра сахарная"
+            ]
+        
+        },
+        "keto": {
+            "name": "Кето / Низкоуглеродная",
+            "description": "Максимум жиров, минимум углеводов. Цель: < 25г углеводов в день. Исключает зерновые, крахмалы, сахар, большинство фруктов",
+            "forbidden_categories": [
+                "хлеб", "выпечка", "макароны", "крупы", "сахар", "сладости", "крахмалистые_овощи", "фрукты_сладкие", "бобовые", "соки", "газировка_сладкая", "алкоголь_сладкий", "соусы_сладкие", "снеки_углеводные" 
+            ],
+            "forbidden_tokens_in_ingredients": [
+                "мука пшеничкая","мука ржаная","мука кукурузная","мука рисовая","крахмал","сахар", "манная крупа","кускус","булгур","перловка"
+            ],
+            "warning_categories": [
+                "молочные_средней_жирности","орехи_высокоуглеродные"
+            ],
+            "max_carbs_per_100g": 10
+        },
+        "low_fodmap": {
+            "name": "Low-FOODMAP",
+            "description": "Исключает ферментируемые олиго-, ди-, моносахариды и полиолы. Для людей с СРК и вздутием. Диета строгая на 4-6 недель, затем фаза введения.",
+            "frbidden_products_exact": [
+                "чеснок","лук репчатый","лук-шалот","лук-порей белая часть","спаржа","артишоки","цветная капуста большие порции","яблоки","груши","арбуз", "манго","персики","сливы","хурма","инжир","пшеница цельнозерновая","рожь","ячмень","фисташки","кешью", "мед","агава","кукурузный сироп с фруктозой"
+            ],
+            "forbidden_tokens_in_ingredients": [
+                "инулин","цикорий корень","фруктоолигосахариды","фос","сорбит","маннит","ксилит","мальтит","изомальт","лактит","сухое молоко цельное","сыворотка молочная сухая"
+            ],
+            "warning_potrions": {
+                "авокадо": "до 1/8 шт",
+                "банан спелый": "избегать, только зеленый до 1/2 шт",
+                "свекла": "до 2 ломтиков",
+                "брокколи": "только головки, до 75г",
+                "нут консервированный": "до 42г (промытый)",
+                "сладкая кукуруза": "до 1/2 початка",
+                "молоко безлактозное": "без ограничений"
+            }
+        },
+        "lactose_free": {
+            "name": "Без лактозы",
+            "description": "Полное исключение молочного сахара - лактозы. Для людей с лактазной недостаточностью.",
+            "forbidden_categories": [
+                "молочные_цельномолочные","кисломолочные_обычные"
+            ],
+            "allowed_exceptions": [
+                "твердые выдержанные сыры","масло сливочное","масло топленое","молоко безлактозное","сливки безлактозные", "растительное молоко"
+            ],
+            "forbidden_tokens_in_ingredients": [
+                "лактоза","молоко сухое","сыворотка молочная","молочный сахар","казеинат натрия с лактозой"
+            ]
+        }                    
+    },
+    "products": {
+        "молочные": {
+            "молоко 3.2": {
+                "category": "молочные",
+                "subcategory": "молоко",
+                "base_tokens": [
+                    "молоко 3.2", "молоко 3,2", "молоко пастеризованное", "молоко цельное"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 3.2,
+                    "typical_protein": 3.0,
+                    "typical_carbs": 4.7
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "до 100мл в день",
+                        "reason": "лактоза - молочный сахар"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 30мл, лучше безлактозное",
+                        "reason": "Высокое содержание лактозы"
+                        
+                    },
+                    "lactose_free": "forbidden"
+
+                }
+            },
+            "молоко безлактозное": {
+                "category": "молочные",
+                "subcategory": "молоко",
+                "base_tokens": [
+                    "безлактозное","без лактозы","lactose free","молоко безлактозное"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": "variable",
+                    "typical_protein": 3.0,
+                    "typical_carbs": 2.5
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "до 200мл",
+                        "reason": "содержит углеводы"
+                    },
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            },
+            "сливки 10": {
+                "category": "молочные",
+                "subcategory": "сливки",
+                "base_tokens": [
+                    "сливки 10","сливки 10%","сливки питьевые"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 10.0,
+                    "typical_protein": 2.7,
+                    "typical_carbs": 4.4
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "жирность низкая, лучше 33%",
+                        "reason": "много углеводов, относительно жиров"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 30мл",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "сливки 33": {
+                "category": "молочные",
+                "subcategory": "сливки",
+                "base_tokens": [
+                    "сливки 33","сливки 33%","сливки для взбивания"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 33.0,
+                    "typical_protein": 2.2,
+                    "typical_carbs": 3.1
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 60мл",
+                        "reason": "низкое содержание лактозы"
+                    },
+                    "lactose_free": {
+                        "verdict": "warning",
+                        "reason": "содержит следы лактозы"
+                    }
+                }
+            },
+            "сметана 15": {
+                "category": "молочные",
+                "subcategory": "сметана",
+                "base_tokens": [
+                    "сметана 15","сметана 15%","сметана нежирная"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 15.0,
+                    "typical_protein": 2.6,
+                    "typical_carbs": 3.6
+                    },
+                "diet_rules":{
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "allowed",
+                        "condition": "в небольших количествах"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 2 ст.л",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "сметана 20": {
+                "category": "молочные",
+                "subcategory": "сметана",
+                "base_tokens": [
+                    "сметана 20","сметана 20%","сметана классическая","сметана деревенская"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 20.0,
+                    "typical_protein": 2.5,
+                    "typical_carbs": 3.4
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 2 ст.л",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "творог обезжиренный": {
+                "category": "молочные",
+                "subcategory": "творог",
+                "base_tokens": [
+                    "творог 0","творог 0%","творог обезжиренный","творог нежирный"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 0.6,
+                    "typical_protein": 18.0,
+                    "typical_carbs": 3.3
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "reason": "низкое содержание жира, высокое белка - неоптимально для кето"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 40г",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "творог 5": {
+                "category": "молочные",
+                "subcategory": "творог",
+                "base_tokens": [
+                    "творог 5","творог 5%","творог зерненый","творог рассыпчатый"
+                ],
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 40г",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "творог 9": {
+                "category": "молочные",
+                "subcategory": "творог",
+                "base_tokens": [
+                    "творог 9","творог 9%","творог жирный"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 9.0,
+                    "typical_protein": 16.0,
+                    "typical_carbs": 2.8
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 40г",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "творожная масса": {
+                "category": "молочные",
+                "subcategory": "творог",
+                "base_tokens": [
+                    "творожная масса","творожный сырок","сырок творожный","масса творожная"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 15.0,
+                    "typical_protein": 12.0,
+                    "typical_carbs": 20.0,
+                    "hidden_sugar": true
+                },
+                "diet_rules": {
+                    "no_sugar": "forbidden",
+                    "keto": "forbidden",
+                    "low_fodmap": {
+                        "verdict": "forbidden",
+                        "reason": "содержит лактозу и часто добавленный сахар/фрукты"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "йогурт натуральный": {
+                "category": "молочные",
+                "subcategory": "йогурт",
+                "base_tokens": [
+                    "йогурт натуральный","йогурт без добавок","йогурт греческий","йогурт термостатный"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": "variable",
+                    "typical_protein": 5.0,
+                    "typical_carbs": 6.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "жирностью не ниже 4%, до 150г",
+                        "reason": "содержит углеводы"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 150г, греческий лучше (меньше лактозы)",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "йогурт с наполнителем": {
+                "category": "молочные",
+                "subcategory": "йогурт",
+                "base_tokens": [
+                    "йогурт с","йогурт фруктовый","йогурт питьевой","йогурт клубничный", "йогурт вишневый"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 2.5,
+                    "typical_protein": 3.0,
+                    "typical_carbs": 14.0,
+                    "hidden_sugar": true
+                },
+                "diet_rules": {
+                    "no_sugar": "forbidden",
+                    "keto": "forbidden",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "проверить состав на фруктозу/инулин",
+                        "reason": "фруктовые наполнители часто содержат FODMAP"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "кефир 2.5": {
+                "category": "молочные",
+                "subcategory": "кисломочные",
+                "base_tokens": [
+                    "кефир 2.5","кефир 2,5","кефир классический"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 2.5,
+                    "typical_protein": 3.0,
+                    "typical_carbs": 4.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "до 100мл",
+                        "reason": "содержит углеводы"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 60мл",
+                        "reason": "лактоза, но ферментированный продукт переносится лучше"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "ряженка": {
+                "category": "молочные",
+                "subcategory": "кисломочные",
+                "base_tokens": [
+                    "ряженка","ряженка 2.5","ряженка 4","ряженка топленая"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": "variable",
+                    "typical_protein": 3.0,
+                    "typical_carbs": 4.2
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "до 100мл",
+                        "reason": "содержит углеводы"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 60мл",
+                        "reason": "лактоза"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "снежок": {
+                "category": "молочные",
+                "subcategory": "кисломочные",
+                "base_tokens": [
+                    "снежок","бифилайф","ацидолакт"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 2.5,
+                    "typical_protein": 3.0,
+                    "typical_carbs": 7.0,
+                    "hidden_sugar": true
+                },
+                "diet_rules": {
+                    "no_sugar": "forbidden",
+                    "keto": "forbidden",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "reason": "содержит сахар и лактозу"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "сыр российский": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "сыр российский","российский сыр","сыр костромской","сыр пошехонский"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": 27.0,
+                    "typical_protein": 23.0,
+                    "typical_carbs": 0.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            },
+            "сыр голландский": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "голландский","сыр гауда","сыр эдам","сыр маасдам","сыр тильзитер"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": 26.0,
+                    "typical_protein": 24.0,
+                    "typical_carbs": 0.5
+                },
+                "diet_rules": {
+                    "lactose_free": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "no_sugar": "allowed"
+                }
+            },
+            "сыр плавленый": {
+                
+            }
+        }
+    }
+}
