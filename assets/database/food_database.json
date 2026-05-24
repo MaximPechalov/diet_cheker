@@ -2,7 +2,7 @@
     "meta":{
         "version": "1.0",
         "last_updated": "2026-05-24",
-        "description": "Полная база продуктов для приложения анализа чеков по 4 диетам: без сахара, кето, low-FOODMAP, без лактозы. Ключи - нормализованные названия (нижний регистр, без брендов).",
+        "description": "Полная база продуктов для приложения анализа чеков по 4 диетам: без сахара, кето, low-FODMAP, без лактозы. Ключи - нормализованные названия (нижний регистр, без брендов).",
         "ocr_normalization_rules": [
             "1. Удалить слова ЦЕЛИКОМ заглавными буквами (бренды: ПРОСТОКВАШИНО, МИРАТОРГ, ЧУДО)",
             "2. Удалить вес/объем в конце: 180г, 200мл, 1л, 1кг",
@@ -10,41 +10,40 @@
             "4. Привести к нижнему регистру",
             "5. Удалить всё после запятой в названии (лишние описания)"
         ],
-        "matching_algoritm": "Ищем в base_tokens каждый продукт. Если найдено - применяем diet_rules. Если не найдено - 'unknown', предлагаем пользователю категоризировать"
+        "matching_algorithm": "Ищем в base_tokens каждый продукт. Если найдено - применяем diet_rules. Если не найдено - 'unknown', предлагаем пользователю категоризировать"
     },
     "diets": {
         "no_sugar": {
             "name": "Без добавленного сахара",
             "description": "Исключает добавленный сахар, сиропы, патоку, мед, декстрозу, мальтодекстрин. Натуральные сахара (фрукты, лактоза) разрешены",
             "forbidden_tokens_in_ingredients": [
-                "сахар", "сахароза", "сироп глюкозный", "сироп фруктозный", "патока", "мед", "агава", "декстроза", "мальтодекстрин", "фруктоза кристалическая", "концентрат сока", "нектар", "карамельный сироп", "сахар тростниковый", "сахар коричневый", "пудра сахарная"
+                "сахар", "сахароза", "сироп глюкозный", "сироп фруктозный", "патока", "мед", "агава", "декстроза", "мальтодекстрин", "фруктоза кристаллическая", "концентрат сока", "нектар", "карамельный сироп", "сахар тростниковый", "сахар коричневый", "пудра сахарная"
             ]
-        
         },
         "keto": {
-            "name": "Кето / Низкоуглеродная",
+            "name": "Кето / Низкоуглеводная",
             "description": "Максимум жиров, минимум углеводов. Цель: < 25г углеводов в день. Исключает зерновые, крахмалы, сахар, большинство фруктов",
             "forbidden_categories": [
-                "хлеб", "выпечка", "макароны", "крупы", "сахар", "сладости", "крахмалистые_овощи", "фрукты_сладкие", "бобовые", "соки", "газировка_сладкая", "алкоголь_сладкий", "соусы_сладкие", "снеки_углеводные" 
+                "хлеб", "выпечка", "макароны", "крупы", "сахар", "сладости", "крахмалистые_овощи", "фрукты_сладкие", "бобовые", "соки", "газировка_сладкая", "алкоголь_сладкий", "соусы_сладкие", "снеки_углеводные"
             ],
             "forbidden_tokens_in_ingredients": [
-                "мука пшеничкая","мука ржаная","мука кукурузная","мука рисовая","крахмал","сахар", "манная крупа","кускус","булгур","перловка"
+                "мука пшеничная","мука ржаная","мука кукурузная","мука рисовая","крахмал","сахар", "манная крупа","кускус","булгур","перловка"
             ],
             "warning_categories": [
-                "молочные_средней_жирности","орехи_высокоуглеродные"
+                "молочные_средней_жирности","орехи_высокоуглеводные"
             ],
             "max_carbs_per_100g": 10
         },
         "low_fodmap": {
-            "name": "Low-FOODMAP",
+            "name": "Low-FODMAP",
             "description": "Исключает ферментируемые олиго-, ди-, моносахариды и полиолы. Для людей с СРК и вздутием. Диета строгая на 4-6 недель, затем фаза введения.",
-            "frbidden_products_exact": [
+            "forbidden_products_exact": [
                 "чеснок","лук репчатый","лук-шалот","лук-порей белая часть","спаржа","артишоки","цветная капуста большие порции","яблоки","груши","арбуз", "манго","персики","сливы","хурма","инжир","пшеница цельнозерновая","рожь","ячмень","фисташки","кешью", "мед","агава","кукурузный сироп с фруктозой"
             ],
             "forbidden_tokens_in_ingredients": [
                 "инулин","цикорий корень","фруктоолигосахариды","фос","сорбит","маннит","ксилит","мальтит","изомальт","лактит","сухое молоко цельное","сыворотка молочная сухая"
             ],
-            "warning_potrions": {
+            "warning_portions": {
                 "авокадо": "до 1/8 шт",
                 "банан спелый": "избегать, только зеленый до 1/2 шт",
                 "свекла": "до 2 ломтиков",
@@ -66,7 +65,7 @@
             "forbidden_tokens_in_ingredients": [
                 "лактоза","молоко сухое","сыворотка молочная","молочный сахар","казеинат натрия с лактозой"
             ]
-        }                    
+        }
     },
     "products": {
         "молочные": {
@@ -93,10 +92,8 @@
                         "verdict": "warning",
                         "condition": "до 30мл, лучше безлактозное",
                         "reason": "Высокое содержание лактозы"
-                        
                     },
                     "lactose_free": "forbidden"
-
                 }
             },
             "молоко безлактозное": {
@@ -186,7 +183,7 @@
                     "typical_fat": 15.0,
                     "typical_protein": 2.6,
                     "typical_carbs": 3.6
-                    },
+                },
                 "diet_rules":{
                     "no_sugar": "allowed",
                     "keto": {
@@ -256,6 +253,12 @@
                 "base_tokens": [
                     "творог 5","творог 5%","творог зерненый","творог рассыпчатый"
                 ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 5.0,
+                    "typical_protein": 17.0,
+                    "typical_carbs": 3.0
+                },
                 "diet_rules": {
                     "no_sugar": "allowed",
                     "keto": "allowed",
@@ -366,7 +369,7 @@
             },
             "кефир 2.5": {
                 "category": "молочные",
-                "subcategory": "кисломочные",
+                "subcategory": "кисломолочные",
                 "base_tokens": [
                     "кефир 2.5","кефир 2,5","кефир классический"
                 ],
@@ -393,7 +396,7 @@
             },
             "ряженка": {
                 "category": "молочные",
-                "subcategory": "кисломочные",
+                "subcategory": "кисломолочные",
                 "base_tokens": [
                     "ряженка","ряженка 2.5","ряженка 4","ряженка топленая"
                 ],
@@ -420,7 +423,7 @@
             },
             "снежок": {
                 "category": "молочные",
-                "subcategory": "кисломочные",
+                "subcategory": "кисломолочные",
                 "base_tokens": [
                     "снежок","бифилайф","ацидолакт"
                 ],
@@ -473,15 +476,244 @@
                     "typical_carbs": 0.5
                 },
                 "diet_rules": {
-                    "lactose_free": "allowed",
+                    "no_sugar": "allowed",
                     "keto": "allowed",
                     "low_fodmap": "allowed",
-                    "no_sugar": "allowed"
+                    "lactose_free": "allowed"
                 }
             },
             "сыр плавленый": {
-                
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "сыр плавленый","сырок плавленый","сыр янтарь","сыр дружба","сыр виола"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 20.0,
+                    "typical_protein": 12.0,
+                    "typical_carbs": 3.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "reason": "содержит углеводы и лактозу"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "reason": "содержит лактозу"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "сыр моцарелла": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "моцарелла","сыр моцарелла","мини моцарелла","моцарелла в рассоле"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 18.0,
+                    "typical_protein": 18.0,
+                    "typical_carbs": 2.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "allowed",
+                        "condition": "до 40г, свежая моцарелла",
+                        "reason": "низкое содержание лактозы"
+                    },
+                    "lactose_free": {
+                        "verdict": "warning",
+                        "reason": "содержит немного лактозы"
+                    }
+                }
+            },
+            "сыр сулугуни": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "сулугуни","сыр сулугуни","сыр копченый","косичка сырная"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 22.0,
+                    "typical_protein": 20.0,
+                    "typical_carbs": 0.5
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 30г",
+                        "reason": "может содержать лактозу"
+                    },
+                    "lactose_free": {
+                        "verdict": "warning",
+                        "reason": "содержит немного лактозы"
+                    }
+                }
+            },
+            "сыр адыгейский": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "адыгейский","сыр адыгейский","сыр черкесский"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 18.0,
+                    "typical_protein": 19.0,
+                    "typical_carbs": 1.5
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 40г",
+                        "reason": "содержит лактозу"
+                    },
+                    "lactose_free": {
+                        "verdict": "warning",
+                        "reason": "содержит лактозу"
+                    }
+                }
+            },
+            "сыр фета": {
+                "category": "молочные",
+                "subcategory": "сыр",
+                "base_tokens": [
+                    "фета","сыр фета","фетакса","фетаки"
+                ],
+                "attributes": {
+                    "contains_lactose": true,
+                    "typical_fat": 21.0,
+                    "typical_protein": 14.0,
+                    "typical_carbs": 4.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "в умеренных количествах",
+                        "reason": "содержит немного углеводов"
+                    },
+                    "low_fodmap": {
+                        "verdict": "warning",
+                        "condition": "до 30г",
+                        "reason": "содержит лактозу"
+                    },
+                    "lactose_free": "forbidden"
+                }
+            },
+            "масло сливочное 82.5": {
+                "category": "молочные",
+                "subcategory": "масло",
+                "base_tokens": [
+                    "масло сливочное","масло 82.5","масло крестьянское","масло традиционное","масло вологодское"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": 82.5,
+                    "typical_protein": 0.7,
+                    "typical_carbs": 0.8
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            },
+            "масло топленое": {
+                "category": "молочные",
+                "subcategory": "масло",
+                "base_tokens": [
+                    "масло топленое","гхи","масло гхи"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": 99.0,
+                    "typical_protein": 0.0,
+                    "typical_carbs": 0.0
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            },
+            "маргарин": {
+                "category": "молочные",
+                "subcategory": "масло",
+                "base_tokens": [
+                    "маргарин","спред","масло растительно-сливочное"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_fat": 70.0,
+                    "typical_protein": 0.3,
+                    "typical_carbs": 0.5
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": {
+                        "verdict": "warning",
+                        "condition": "проверить на гидрогенизированные жиры",
+                        "reason": "трансжиры"
+                    },
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
             }
-        }
+        },
+        "яйца": {
+            "яйцо куриное": {
+                "category": "яйца",
+                "subcategory": "куриные",
+                "base_tokens": [
+                    "яйцо","яйца","яйцо куриное","яйцо столовое","яйцо отборное","яйцо с0","яйцо с1","яйцо с2"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_protein": 12.7,
+                    "typical_fat": 11.5,
+                    "typical_carbs": 0.7
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            },
+            "яйцо перепелиное": {
+                "category": "яйца",
+                "subcategory": "перепелиные",
+                "base_tokens": [
+                    "яйцо перепелиное","перепелиные яйца","яйца перепелов"
+                ],
+                "attributes": {
+                    "contains_lactose": false,
+                    "typical_protein": 11.9,
+                    "typical_fat": 13.1,
+                    "typical_carbs": 0.6
+                },
+                "diet_rules": {
+                    "no_sugar": "allowed",
+                    "keto": "allowed",
+                    "low_fodmap": "allowed",
+                    "lactose_free": "allowed"
+                }
+            }
+        },
+        ""
     }
 }
