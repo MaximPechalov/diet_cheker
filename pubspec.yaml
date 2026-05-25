@@ -1,0 +1,49 @@
+name: diet_chek
+description: Персональный диетический аудитор чеков.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Управление состоянием
+  provider: ^6.1.1
+
+  # Локальное хранилище для истории чеков
+  hive_flutter: ^1.1.0
+
+  # Хранилище для настроек
+  shared_preferences: ^2.2.2
+
+  # OCR — распознавание текста с камеры
+  google_mlkit_text_recognition: ^0.11.0
+
+  # Работа с камерой
+  camera: ^0.10.5+9
+
+  # Выбор изображений из галереи
+  image_picker: ^1.0.7
+
+  # Пути к файлам
+  path_provider: ^2.1.2
+
+  # Работа с файловой системой
+  path: ^1.8.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Линтер — проверка качества кода
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  # Подключаем нашу базу продуктов
+  assets:
+    - assets/database/food_database.json
